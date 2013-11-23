@@ -3,35 +3,54 @@ Sash + arith extensions
 
 This forked project contains :
 
-- The removing of warning
+- A warning free sash implementation
 
 - A simple extension that evaluate expressions
 
+Quick install :
+
+make install
+
+(Requires OCaml - preferably >= 3.12)
+If you stumble at compilation-time, manually edit the OCaml library path in the Makefile.
+
 Basic examples :
-      - \-echo $[1+2*3] displays 7
-      - \-arith '1+(2*3)' displays 9
-      - setenv TWO 2
-        \-echo $[1+$TWO] displays 3
-
+```
+      -echo $[1+2*3] displays 7
+      -arith '1+(2*3)' displays 9
+      #setenv TWO 2
+      -echo $[1+$TWO] displays 3
+```
 Advanced types :
-	 - Lists :
-	   It is possible to define lists with this syntax : [e1; e2; ... ; en]
-	   We can also use the range operator '..' : [e1 .. en ].
-	   This will result in the creation of a list starting from e1 to en.
-	   examples : \-echo $[[1;2;3]] displays [1;2;3]
-	   	      \-echo $[[1..4]] displays [1;2;3;4]
-	   	      \-echo $[[4..1]] displays [4;3;2;1]
+- Lists :
+  It is possible to define lists with this syntax : [e1; e2; ... ; en]
+  We can also use the range operator '..' : [e1 .. en ].
+  This will result in the creation of a list starting from e1 to en.
+  E.G : 
 
-	 - Arrays :
-	   The syntax for declaring arrays is : {e1; ...; en}
-	   To access the element N, we use the operator '.' : {e1; ..; eN}.(N-1)
-	   The array is cyclic thus given the index -1, 
-	   we will get the Nth element.
-	   Also, given the index N, we will access the first element, 
-	   N+2 the second etc.
-	   examples : \-echo $[{1;2;3}] displays {1;2;3}
-	   	      \-echo $[{1;2;3}.(2)] displays 3
-	   	      \-echo $[{1;2;3}.(3)] displays 1
+
+```
+		      -echo $[[1;2;3]] displays [1;2;3]
+	   	      -echo $[[1..4]] displays [1;2;3;4]
+	   	      -echo $[[4..1]] displays [4;3;2;1]
+```
+
+
+- Arrays :
+  The syntax for declaring arrays is : {e1; ...; en}
+  To access the element N, we use the operator '.' : {e1; ..; eN}.(N-1)
+  The array is cyclic thus given the index -1, 
+  we will get the Nth element.
+  Also, given the index N, we will access the first element, 
+  N+2 the second etc.
+  E.G :
+
+
+```			
+		      -echo $[{1;2;3}] displays {1;2;3}
+	   	      -echo $[{1;2;3}.(2)] displays 3
+	   	      -echo $[{1;2;3}.(3)] displays 1
+```
 
 Operators :
 	  A few operators are defined.
@@ -56,6 +75,7 @@ Operators :
 
 Expression examples -- should be called either with $[expr] or with single or double quotes if called by the \-arith command
 
+```
 1 + 2 + [1;2;3] => [3;1;2;3]
 [1;2;3] + 4 => [1;2;3;4]
 [1;2] + [3;4] => [1;2;3;4]
@@ -71,10 +91,11 @@ $AR + $AR => {1;2;3;1;2;3}
 $L + [7..1] => [8;9;10;7;6;5;4;3;2;1]
 
 3 / {-3;-2;-1;0}.(-1) => Error : Division by zero
+```
 
 Contact : vincent.botbol@etu.upmc.fr mathieu.chailloux@etu.upmc.fr
 
-Sash readme
+Old Sash readme
 ===
 
 This is release 3.7 of sash, my stand-alone shell for Linux or other systems.
