@@ -1,10 +1,20 @@
-(*
- * Copyright (c) 2013 by Vincent Botbol - Mathieu Chailloux
- * Permission is granted to use, distribute, or modify this source,
- * provided that this copyright notice remains intact.
- *
- * Most simple built-in commands are here.
- *)
+(*  SASH + ARITHMETIC EXTENSION
+    Copyright (C) 2013 Vincent Botbol - Mathieu Chailloux
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*)
 exception Invalid_arg
 exception Div_by_0
 exception Undef_op
@@ -59,9 +69,11 @@ let apply_op op (g : ast) (d : ast) : ast =
   let f_op = fetch_op op in
   match g, d with
     | Num v1, Num v2 -> Num (f_op v1 v2)
-    | List l1, List l2 -> List (l1 @ l2)
+    | List l1, List l2  when (match op with Plus -> true | _ -> false) -> 
+      List (l1 @ l2)
 
-    | Array a1, Array a2 -> Array (Array.append a1 a2)
+    | Array a1, Array a2 when (match op with Plus -> true | _ -> false) ->
+      Array (Array.append a1 a2)
 
     | List l, Num v when (match op with Plus -> true | _ -> false) -> List (l@[d])
     | Num v, List l when (match op with Plus -> true | _ -> false) -> List (g::l)
@@ -122,11 +134,10 @@ let rec eval reparse : ast -> ast = function
     let g = eval reparse g in
     let d = eval reparse d in
     access_tab (g, d)
-
-  | Op ((Div | Mod), g, Num(0.0)) ->
-    raise Div_by_0
     
   | Op (op, g, d) -> 
     let g = eval reparse g in 
     let d = eval reparse d in
-    apply_op op g d
+    match op, d with
+      | Div, Num(0.0) | Mod, Num(0.0) -> raise Div_by_0 
+      | _ -> apply_op op g d
